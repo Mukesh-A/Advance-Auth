@@ -52,7 +52,7 @@ const login = async (req, res, next) => {
     return res.status(400).json({ message: "invalid email/password" });
   }
   const token = jwt.sign({ id: existingUser.id }, JWT_SECRET_KEY, {
-    expiresIn: "1hr",
+    expiresIn: "30s",
   });
   res.cookie(String(existingUser._id), token, {
     path: "/",
@@ -68,8 +68,10 @@ const login = async (req, res, next) => {
 
 //verify the user with token
 const verifyToken = (req, res, next) => {
-  const header = req.headers["authorization"];
-  const token = header.split(" ")[1];
+  const cookies = req.headers.cookie;
+  const token = cookies.split("=")[1];
+  console.log(token);
+  
   if (!token) {
     res.status(404).json({ message: "no token found" });
   }
