@@ -1,14 +1,34 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
+  const history = useNavigate();
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
     password: "",
   });
-  const handelSubmit = (w) => {};
-
+  const handelChange = (e) => {
+    setInputs({ ...inputs, [e.target.name]: e.target.value });
+  };
+  const sendRequest = async () => {
+    const res = await axios
+      .post("http://localhost:4000/api/signup", {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password,
+      })
+      .catch((err) => console.log(err));
+    const data = await res.data;
+    return data;
+  };
+  const handelSubmit = (e) => {
+    e.preventDefault();
+    console.log(inputs);
+    //send http request
+    sendRequest().then(() => history("/login"));
+  };
   return (
     <div>
       <form onSubmit={handelSubmit}>
@@ -25,9 +45,7 @@ const Signup = () => {
           <TextField
             name="name"
             value={inputs.name}
-            onChange={(e) =>
-              setInputs({ ...inputs, [e.target.name]: e.target.value })
-            }
+            onChange={handelChange}
             variant="outlined"
             placeholder="Name"
             margin="normal"
@@ -35,9 +53,7 @@ const Signup = () => {
           <TextField
             name="email"
             value={inputs.email}
-            onChange={(e) =>
-              setInputs({ ...inputs, [e.target.name]: e.target.value })
-            }
+            onChange={handelChange}
             type="email"
             variant="outlined"
             placeholder="Email"
@@ -46,9 +62,7 @@ const Signup = () => {
           <TextField
             name="password"
             value={inputs.password}
-            onChange={(e) =>
-              setInputs({ ...inputs, [e.target.name]: e.target.value })
-            }
+            onChange={handelChange}
             type="password"
             variant="outlined"
             placeholder="Password"
